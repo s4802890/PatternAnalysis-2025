@@ -16,6 +16,19 @@ ConvNeXt is a modernized CNN architecture that achieves competitive performance 
 - GELU activation and LayerNorm
 - Four-stage hierarchical structure
 
+### ConvNeXtBlock (Building Block)
+The basic building block implements:
+- Depthwise 7×7 convolution (groups=dim for channel-wise processing)
+- LayerNorm for channel-wise normalization
+- Inverted bottleneck MLP (1× → 4× → 1×)
+- GELU activation (smoother than ReLU)
+- Residual connection (skip connection for gradient flow)
+
+Each block processes features with large receptive field and efficient channel mixing.
+
+### Full Model Architecture
+Stem layer (4×4 conv stride 4: 224×224 → 56×56, 96 channels)
+
 ## Dataset
 ADNI (Alzheimer's Disease Neuroimaging Initiative) preprocessed brain MRI data.
 

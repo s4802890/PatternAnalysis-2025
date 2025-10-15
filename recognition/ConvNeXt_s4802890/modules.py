@@ -40,3 +40,23 @@ class ConvNeXtBlock(nn.Module):
         x = residual + x
         return x
     
+    class ConvNeXt(nn.Module):
+        """
+        ConvNeXt Model for ADNI binary classification
+        Architecture: Stem -> 4 Stages -> Classification Head
+        """
+        def __init__(self, in_channels=1, num_classes=2):
+            super().__init__()
+            
+            # Stem: Aggressive downsampling 224x224 -> 56x56
+            # 4x4 conv with stride 4 (patchify operation)
+            self.stem = nn.Sequential(
+                nn.Conv2d(in_channels, 96, kernel_size=4, stride=4),
+                nn.LayerNorm(96, eps=1e-6)
+            )
+            
+        def forward(self, x):
+            # Input: (B, 1, 224, 224)
+            x = self.stem(x)
+            # Output: (B, 96, 56, 56)
+            return x
