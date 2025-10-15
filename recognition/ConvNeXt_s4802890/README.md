@@ -7,10 +7,14 @@ Binary classification of brain MRIs from the ADNI dataset:
  
 **Target accuracy**: ≥ 0.8 on test set
 
-## Model
-ConvNeXt-Tiny with ImageNet pre-training, fine-tuned for binary classification.
+## Model Architecture
+ConvNeXt built from scratch for binary classification.
 
-ConvNeXt is a modernized CNN architecture that achieves competitive performance with Vision Transformers while maintaining the simplicity and efficiency of convolutional networks.
+ConvNeXt is a modernized CNN architecture that achieves competitive performance with Vision Transformers while maintaining the simplicity and efficiency of convolutional networks. Key features include:
+- 7×7 depthwise convolutions for larger receptive fields
+- Inverted bottleneck design (expand 4× then compress)
+- GELU activation and LayerNorm
+- Four-stage hierarchical structure
 
 ## Dataset
 ADNI (Alzheimer's Disease Neuroimaging Initiative) preprocessed brain MRI data.
@@ -27,3 +31,9 @@ ADNI (Alzheimer's Disease Neuroimaging Initiative) preprocessed brain MRI data.
 - Minimum 8GB RAM
 
 Training performed on Rangpur HPC cluster.
+
+## Model Architecture
+
+### ConvNeXtBlock
+- Depthwise 7x7 convolution implemented
+- TODO: Add normalization and MLP layers
