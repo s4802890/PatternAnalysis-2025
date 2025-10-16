@@ -32,6 +32,31 @@ Stem layer (4×4 conv stride 4: 224×224 → 56×56, 96 channels)
 ## Dataset
 ADNI (Alzheimer's Disease Neuroimaging Initiative) preprocessed brain MRI data.
 
+**Structure**:
+- Training and test splits pre-defined
+- Two classes: AD (Alzheimer's Disease) and NC (Normal Control)
+- Grayscale brain MRI slices in JPEG/PNG format
+
+**Preprocessing**:
+- Resized to 224×224 for ConvNeXt input
+- Normalized to mean=0.5, std=0.5
+- Training augmentation: random horizontal flip, random rotation (±10°)
+
+## Training
+
+**Hyperparameters**:
+- Batch size: 32
+- Learning rate: 1e-4
+- Epochs: 50
+- Optimizer: AdamW with weight decay 0.01
+- Loss function: CrossEntropyLoss
+
+**Training process**:
+- Trains for 50 epochs with validation after each epoch
+- Saves best model checkpoint based on validation accuracy
+- Displays training and validation loss and accuracy per epoch
+
+
 ## Requirements
 **Python packages:**
 - `torch==2.7.1`

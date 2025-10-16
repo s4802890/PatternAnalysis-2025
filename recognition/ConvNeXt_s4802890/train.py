@@ -6,6 +6,58 @@ from tqdm import tqdm
 from modules import ConvNeXt
 from dataset import get_data_loaders
 
+def train_epoch(model, loader, criterion, optimizer, device):
+    """Train for one epoch"""
+    model.train()
+    running_loss = 0.0
+    correct = 0
+    total = 0
+    
+    for images, labels in tqdm(loader, desc='Training'):
+        images, labels = images.to(device), labels.to(device)
+        
+        # Forward pass
+        optimizer.zero_grad()
+        outputs = model(images)
+        loss = criterion(outputs, labels)
+        
+        # Backward pass
+        loss.backward()
+        optimizer.step()
+        
+        running_loss += loss.item()
+        _, predicted = outputs.max(1)
+        total += labels.size(0)
+        correct += predicted.eq(labels).sum().item()
+    
+    epoch_loss = running_loss / len(loader)
+    epoch_acc = correct / total
+    return epoch_loss, epoch_acc
+
+def validate(model, loader, criterion, device):
+    """Validate the model"""
+    model.eval()
+    running_loss = 0.0
+    correct = 0
+    total = 0
+    
+    with torch.no_grad():
+        for images, labels in tqdm(loader, desc='Validating'):
+            images, labels = images.to(device), labels.to(device)
+            
+            # Forward pass
+            outputs = model(images)
+            loss = criterion(outputs, labels)
+            
+            running_loss += loss.item()
+            _, predicted = outputs.max(1)
+            total += labels.size(0)
+            correct += predicted.eq(labels).sum().item()
+    
+    epoch_loss = running_loss / len(loader)
+    epoch_acc = correct / total
+    return epoch_loss, epoch_acc
+
 def main():
     # Device setup
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -40,5 +92,30 @@ def main():
     print(f"  Epochs: {num_epochs}")
     print(f"  Optimizer: AdamW with weight decay 0.01")
     
+    # Training loop
+    print("\nStarting training...\n")
+    best_acc = 0.0
+    
+    for epoch in range(num_epochs):
+        print(f"Epoch {epoch+1}/{num_epochs}")
+        
+        # Train
+        train_loss, train_acc = train_epoch(model, train_loader, criterion, optimizer, device)
+        
+        # Validate
+        val_loss, val_acc = validate(model, test_loader, criterion, device)
+        
+        print(f"  Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f}")
+        print(f"  Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}")
+        
+        if val_acc > best_acc:
+            best_acc = val_acc
+            torch.save(model.state_dict(), 'convnext_adni_best.pth')
+            print(f"  Saved best model with accuracy: {best_acc:.4f}")
+        
+        print()
+    
+    print(f"Training complete! Best validation accuracy: {best_acc:.4f}")
+
 if __name__ == "__main__":
     main()
