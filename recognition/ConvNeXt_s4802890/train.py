@@ -2,6 +2,10 @@ import torch
 import torch.nn as nn
 from torch.optim import AdamW
 from tqdm import tqdm
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.metrics import confusion_matrix, classification_report
+import seaborn as sns
 
 from modules import ConvNeXt
 from dataset import get_data_loaders
@@ -57,6 +61,66 @@ def validate(model, loader, criterion, device):
     epoch_loss = running_loss / len(loader)
     epoch_acc = correct / total
     return epoch_loss, epoch_acc
+
+def evaluate_model(model, loader, device):
+    """Evaluate model and return predictions and labels"""
+    model.eval()
+    all_preds = []
+    all_labels = []
+    
+    with torch.no_grad():
+        for images, labels in tqdm(loader, desc='Evaluating'):
+            images = images.to(device)
+            outputs = model(images)
+            _, predicted = outputs.max(1)
+            
+            all_preds.extend(predicted.cpu().numpy())
+            all_labels.extend(labels.numpy())
+    
+    return np.array(all_preds), np.array(all_labels)
+
+def plot_training_history(train_losses, train_accs, val_losses, val_accs):
+    """Plot and save training curves"""
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+    
+    epochs = range(1, len(train_losses) + 1)
+    
+    # Loss plot
+    ax1.plot(epochs, train_losses, 'b-', label='Train Loss', linewidth=2)
+    ax1.plot(epochs, val_losses, 'r-', label='Val Loss', linewidth=2)
+    ax1.set_xlabel('Epoch', fontsize=12)
+    ax1.set_ylabel('Loss', fontsize=12)
+    ax1.set_title('Training and Validation Loss', fontsize=14)
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+    
+    # Accuracy plot
+    ax2.plot(epochs, train_accs, 'b-', label='Train Acc', linewidth=2)
+    ax2.plot(epochs, val_accs, 'r-', label='Val Acc', linewidth=2)
+    ax2.set_xlabel('Epoch', fontsize=12)
+    ax2.set_ylabel('Accuracy', fontsize=12)
+    ax2.set_title('Training and Validation Accuracy', fontsize=14)
+    ax2.legend()
+    ax2.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig('training_history.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print("Training curves saved to 'training_history.png'")
+
+def plot_confusion_matrix(cm, class_names=['NC', 'AD']):
+    """Plot and save confusion matrix"""
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+                xticklabels=class_names, yticklabels=class_names,
+                cbar_kws={'label': 'Count'})
+    plt.xlabel('Predicted', fontsize=12)
+    plt.ylabel('Actual', fontsize=12)
+    plt.title('Confusion Matrix - ADNI Test Set', fontsize=14)
+    plt.tight_layout()
+    plt.savefig('confusion_matrix.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print("Confusion matrix saved to 'confusion_matrix.png'")
 
 def main():
     # Device setup
