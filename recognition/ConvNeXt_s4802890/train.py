@@ -160,6 +160,11 @@ def main():
     print("\nStarting training...\n")
     best_acc = 0.0
     
+    train_losses = []
+    train_accs = []
+    val_losses = []
+    val_accs = []
+
     for epoch in range(num_epochs):
         print(f"Epoch {epoch+1}/{num_epochs}")
         
@@ -168,6 +173,11 @@ def main():
         
         # Validate
         val_loss, val_acc = validate(model, test_loader, criterion, device)
+
+        train_losses.append(train_loss)
+        train_accs.append(train_acc)
+        val_losses.append(val_loss)
+        val_accs.append(val_acc)
         
         print(f"  Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f}")
         print(f"  Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}")
@@ -180,6 +190,44 @@ def main():
         print()
     
     print(f"Training complete! Best validation accuracy: {best_acc:.4f}")
+
+    print("\nGenerating training plots...")
+    plot_training_history(train_losses, train_accs, val_losses, val_accs)
+    
+    # Final evaluation on test set
+    print("\nEvaluating on test set...")
+    model.load_state_dict(torch.load('convnext_adni_best.pth'))
+    predictions, labels = evaluate_model(model, test_loader, device)
+    
+    # Calculate metrics
+    accuracy = (predictions == labels).mean()
+    cm = confusion_matrix(labels, predictions)
+    class_names = ['NC', 'AD']
+    report = classification_report(labels, predictions, target_names=class_names, digits=4)
+    
+    # Print results
+    print("\n" + "="*50)
+    print("FINAL TEST RESULTS")
+    print("="*50)
+    print(f"\nTest Accuracy: {accuracy:.4f} ({accuracy*100:.2f}%)")
+    print(f"Target: ≥0.8000 (80.00%)")
+    if accuracy >= 0.8:
+        print("✓ TARGET ACHIEVED!")
+    else:
+        print("✗ Target not reached")
+    
+    print("\nClassification Report:")
+    print(report)
+    
+    print("\nConfusion Matrix:")
+    print(cm)
+    
+    # Plot confusion matrix
+    plot_confusion_matrix(cm, class_names)
+    
+    # Save final model
+    torch.save(model.state_dict(), 'convnext_adni_final.pth')
+    print("\nFinal model saved to 'convnext_adni_final.pth'")
 
 if __name__ == "__main__":
     main()
