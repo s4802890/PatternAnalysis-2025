@@ -129,8 +129,8 @@ def main():
     
     # Hyperparameters
     batch_size = 32
-    learning_rate = 1e-4
-    num_epochs = 50
+    learning_rate = 5e-5
+    num_epochs = 150
     
     # Data loaders
     print("Loading data...")

@@ -66,7 +66,7 @@ class ConvNeXt(nn.Module):
         
         # Channel dimensions for each stage
         dims = [96, 192, 384, 768]
-        depths = [3, 3, 9, 3]
+        depths = [3, 3, 27, 3]
         
         # Stem: Aggressive downsampling 224x224 -> 56x56
         self.stem = nn.Sequential(
