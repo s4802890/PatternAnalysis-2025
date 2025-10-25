@@ -73,7 +73,10 @@ def get_data_loaders(batch_size=16, num_workers=4):
     # Training transforms (with augmentation)
     train_transform = transforms.Compose([
         transforms.RandomHorizontalFlip(p=0.5),
-        transforms.RandomRotation(degrees=10),
+        transforms.RandomVerticalFlip(p=0.3),
+        transforms.RandomRotation(degrees=25),
+        transforms.RandomAffine(degrees=0, translate=(0.2, 0.2), scale=(0.9, 1.1)),  
+        transforms.ColorJitter(brightness=0.4, contrast=0.4), 
         transforms.Normalize(mean=[0.5], std=[0.5])
     ])
     

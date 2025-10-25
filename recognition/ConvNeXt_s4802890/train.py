@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.optim import AdamW
+from torch.optim.lr_scheduler import CosineAnnealingLR
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import numpy as np
@@ -147,9 +148,10 @@ def main():
     print(f"Total parameters: {total_params:,}")
     
     # Loss and optimizer
-    criterion = nn.CrossEntropyLoss()
-    optimizer = AdamW(model.parameters(), lr=learning_rate, weight_decay=0.01)
-    
+    class_weights = torch.tensor([1.0, 1.5]).to(device)
+    criterion = nn.CrossEntropyLoss(label_smoothing=0.1, weight=class_weights)
+    optimizer = AdamW(model.parameters(), lr=learning_rate, weight_decay=0.05)
+
     print("\nTraining configuration:")
     print(f"  Batch size: {batch_size}")
     print(f"  Learning rate: {learning_rate}")

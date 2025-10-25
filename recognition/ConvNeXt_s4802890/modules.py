@@ -5,7 +5,7 @@ class ConvNeXtBlock(nn.Module):
     """
     ConvNeXt Block - Basic building block
     """
-    def __init__(self, dim):
+    def __init__(self, dim, drop_rate = 0.1):
         super().__init__()
         # Depthwise convolution
         self.dwconv = nn.Conv2d(dim, dim, kernel_size=7, padding=3, groups=dim)
@@ -17,6 +17,8 @@ class ConvNeXtBlock(nn.Module):
         self.act = nn.GELU()
         self.pwconv2 = nn.Linear(4 * dim, dim)  # Compress back
         
+        self.drop = nn.Dropout(drop_rate)
+
     def forward(self, x):
         residual = x
         
@@ -30,8 +32,10 @@ class ConvNeXtBlock(nn.Module):
         x = self.norm(x)
         x = self.pwconv1(x)
         x = self.act(x)
+        x = self.drop(x)
         x = self.pwconv2(x)
-        
+        x = self.drop(x)
+
         # Permute back
         x = x.permute(0, 3, 1, 2)
         
@@ -66,7 +70,7 @@ class ConvNeXt(nn.Module):
         
         # Channel dimensions for each stage
         dims = [96, 192, 384, 768]
-        depths = [3, 3, 27, 3]
+        depths = [3, 3, 9, 3]
         
         # Stem: Aggressive downsampling 224x224 -> 56x56
         self.stem = nn.Sequential(
@@ -89,7 +93,7 @@ class ConvNeXt(nn.Module):
             # Stage with multiple ConvNeXt blocks
             stage = nn.Sequential(
                 downsample,
-                *[ConvNeXtBlock(dims[i]) for _ in range(depths[i])]
+                *[ConvNeXtBlock(dims[i], drop_rate = 0.2) for _ in range(depths[i])]
             )
             self.stages.append(stage)
         
