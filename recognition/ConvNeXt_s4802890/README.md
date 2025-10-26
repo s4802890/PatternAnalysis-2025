@@ -1,11 +1,30 @@
 # Alzheimer's Disease Classification using ConvNeXt
 
-## Problem Description
+# 1. Problem Description
 Binary classification of brain MRIs from the ADNI dataset:
 - **AD**: Alzheimer's Disease  
 - **NC**: Normal Control (Cognitively Normal)
  
 **Target accuracy**: ≥ 0.8 on test set
+# 1.1 Dataset Overview
+This project used the [ADNI dataset fo Alzheimer's Disease](http://adni.loni.usc.edu/). A preprocessed version of the dataset was used.
+
+The dataset is comprised of two classes - AD (Alzheimer's Disease ) and NC (Normal Control).
+
+
+# 2. Environment Setup
+This project was tested on Miniconda, which can be installed [here](https://docs.anaconda.com/miniconda/miniconda-install/)
+**Python packages:**
+- `torch==2.7.1`
+- `torchvision==0.22.1`
+- `Pillow==11.0.0`
+- `CUDA==11.8`
+
+**Hardware:**
+- GPU with CUDA 11.8 support
+- Minimum 8GB RAM
+
+Training performed on Rangpur HPC cluster.
 
 ## Model Architecture
 ConvNeXt built from scratch for binary classification.
@@ -29,8 +48,7 @@ Each block processes features with large receptive field and efficient channel m
 ### Full Model Architecture
 Stem layer (4×4 conv stride 4: 224×224 → 56×56, 96 channels)
 
-## Dataset
-ADNI (Alzheimer's Disease Neuroimaging Initiative) preprocessed brain MRI data.
+
 
 **Structure**:
 - Training and test splits pre-defined
@@ -57,18 +75,6 @@ ADNI (Alzheimer's Disease Neuroimaging Initiative) preprocessed brain MRI data.
 - Displays training and validation loss and accuracy per epoch
 
 
-## Requirements
-**Python packages:**
-- `torch==2.7.1`
-- `torchvision==0.22.1`
-- `Pillow==11.0.0`
-- `CUDA==11.8`
-
-**Hardware:**
-- GPU with CUDA 11.8 support
-- Minimum 8GB RAM
-
-Training performed on Rangpur HPC cluster.
 
 ## Model Architecture
 
