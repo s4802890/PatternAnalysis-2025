@@ -13,7 +13,15 @@ The dataset is comprised of two classes - AD (Alzheimer's Disease ) and NC (Norm
 
 
 # 2. Environment Setup
+## 2.1 Conda Setup
 This project was tested on Miniconda, which can be installed [here](https://docs.anaconda.com/miniconda/miniconda-install/).
+
+Then navigate to the directory of this project within the Conda terminal and execute the following commands:
+
+    conda env create -f environment.yml
+    conda activate convnext
+
+## 2.2 Non-Conda Setup
 
 Non-conda is not strictly necessary, if desired.
 
@@ -30,7 +38,7 @@ The required packages that must be installed are:
 - scikit-learn 1.7.2
 - tqdm 4.67.1
 
-## Model Architecture
+# 3. Model Architecture
 ConvNeXt is a modernized CNN architecture that achieves competitive performance with Vision Transformers while maintaining the simplicity and efficiency of convolutional networks. Key features include:
 - 7×7 depthwise convolutions for larger receptive fields
 - Inverted bottleneck design (expand 4× then compress)
@@ -39,7 +47,7 @@ ConvNeXt is a modernized CNN architecture that achieves competitive performance 
 
 ### ConvNeXtBlock (Building Block)
 ![alt text](image.png)
-*ConvNeXt block, retrieved from https://arxiv.org/pdf/2201.03545*
+*ConvNeXt block, retrieved from https://arxiv.org/pdf/2201.03545
 
 The basic building block implements:
 - Depthwise 7×7 convolution (groups=dim for channel-wise processing)
@@ -79,3 +87,24 @@ Total: 18 ConvNeXtBlocks across 4 stages
 - Trains for up to 150 epochs with validation after each epoch
 - Generates training curves (loss and accuracy plots)
 - Final evaluation on test set with confusion matrix
+
+# 4. Results
+Run ```python train.py``` to train and validate.
+### Training and Validation History
+![image](plots/training_history.png)
+
+Both training loss and accuracy show stable trends over time. Training loss decreases gradually over time as accuracy increases. Validation shows much more unstable trends. Despite this, validation accuracy still shows a noticeable increase over time.
+![image](plots/confusion_matrix.png)
+This model shows strong accuracy when labelling images of the NC class. However, it struggles with False Negatives when trying to identify images relating to the AD class. This is quite concerning because this would have the most severe impact in real-life applications.
+
+| Class | Precision | Recall | F1-Score | Support |
+|-------|-----------|--------|----------|---------|
+| NC    | 0.7218    | 0.9161 | 0.8074   | 4540    |
+| AD    | 0.8823    | 0.6406 | 0.7423   | 4460    |
+| **Accuracy** | | | **0.7796** | **9000** |
+
+The modle achieves an accuract of 0.7796, which is not bad but could be better.
+
+# 5. References
+Z. Liu, H. Mao, C.-Y. Wu, C. Feichtenhofer, T. Darrell, and S. Xie, “A ConvNet for the 2020s,”
+arXiv:2201.03545 [cs], Mar. 2022, arXiv: 2201.03545. [Online]. Available: http://arxiv.org/abs/2201.03545
