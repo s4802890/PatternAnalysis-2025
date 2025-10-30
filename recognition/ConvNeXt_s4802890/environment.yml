@@ -1,4 +1,4 @@
-name: torch
+name: convnext
 channels:
   - defaults
   - conda-forge
